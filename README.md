@@ -54,14 +54,22 @@ ssh pi@192.168.X.X
 Mdp par default: ``raspberry`` 
 
 2. Mettez vôtre system à jour:
-```sudo apt update```
-```sudo apt upgrade```
+```
+sudo apt update
+```
+```
+sudo apt upgrade
+```
 
 3. Créer un nouvel utilisateur (pour ma part ça sera `idk`):
-```sudo adduser idk```
+```
+sudo adduser idk
+```
 
 4.  Ajouter vôtre nouvel utilisateur aux groupes suivant:
-``` sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users, input,netdev,gpio,i2c,spi idk ```
+``` 
+sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users, input,netdev,gpio,i2c,spi idk 
+```
 
 5. Changer d'utilisateur:
 ```
@@ -70,19 +78,29 @@ Mdp par default: ``raspberry``
 
 
 6. Arrêtez les process utilisé par ``pi``:
-``sudo pkill -u pi``
+``
+sudo pkill -u pi
+``
 
 7. Reconnecter vous en ssh avec vôtre nouvel utilisateur:
-``ssh idk@192.168.X.X``
+``
+ssh idk@192.168.X.X
+``
 
 8. Supprimer ``pi`` et son home dir:
-``sudo deluser -remove-home pi``
+``
+sudo deluser -remove-home pi
+``
 
 9. Modifier le fichier en remplacent ``pi`` par vôtre nouvel utilisateur:
-``sudo nano /etc/sudoers.d/010_pi-nopasswd `` 
+``
+sudo nano /etc/sudoers.d/010_pi-nopasswd 
+`` 
 
 10. Télécharger ``openssh-server``:
-``apt install openssh-server``
+``
+apt install openssh-server
+``
 
 11. Vous pouvez vous déconnecter.
 ***
