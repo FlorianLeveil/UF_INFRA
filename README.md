@@ -48,21 +48,26 @@ https://www.balena.io/etcher/
 ***
 ##### 2.2 Configuration Utilisateur
 1. Allumer votre Raspberry puis repérer son IP pour vous y connecter en SSH.
-``ssh pi@192.168.X.X``
+ ```
+ssh pi@192.168.X.X
+ ```
 Mdp par default: ``raspberry`` 
 
 2. Mettez vôtre system à jour:
-``sudo apt update``
-``sudo apt upgrade``
+```sudo apt update```
+```sudo apt upgrade```
 
 3. Créer un nouvel utilisateur (pour ma part ça sera `idk`):
-``sudo adduser idk``
+```sudo adduser idk```
 
 4.  Ajouter vôtre nouvel utilisateur aux groupes suivant:
 ``` sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users, input,netdev,gpio,i2c,spi idk ```
 
 5. Changer d'utilisateur:
-``sudo su - idk``
+```
+`sudo su - idk 
+```
+
 
 6. Arrêtez les process utilisé par ``pi``:
 ``sudo pkill -u pi``
