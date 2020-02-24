@@ -1,8 +1,9 @@
 # PROJET UF INFRA
 ## SOMMAIRE
-1. INTRODUCTION
- 1.1 Matériels utilisées
-2. OS INSTALL
+
+1.INTRODUCTION
+1.1Matériels utilisées
+2.OS INSTALL
  2.1 Raspbian
  2.2 Configuration utilisateur 
  2.3 Faite un redirection de port sur vôtre box
