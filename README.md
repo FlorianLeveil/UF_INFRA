@@ -78,29 +78,29 @@ sudo usermod -a -G adm,dialout,cdrom,sudo,audio,video,plugdev,games,users, input
 
 
 6. Arrêtez les process utilisé par ``pi``:
-``
+```
 sudo pkill -u pi
-``
+```
 
 7. Reconnecter vous en ssh avec vôtre nouvel utilisateur:
-``
+```
 ssh idk@192.168.X.X
-``
+```
 
 8. Supprimer ``pi`` et son home dir:
-``
+```
 sudo deluser -remove-home pi
-``
+```
 
 9. Modifier le fichier en remplacent ``pi`` par vôtre nouvel utilisateur:
-``
+```
 sudo nano /etc/sudoers.d/010_pi-nopasswd 
-`` 
+``` 
 
 10. Télécharger ``openssh-server``:
-``
+```
 apt install openssh-server
-``
+```
 
 11. Vous pouvez vous déconnecter.
 ***
@@ -115,13 +115,19 @@ apt install openssh-server
 #### 2.4 SSH config
 1. On va activer la connexion SSH par clés.
 3. Sur vôtre host générer une nouvel clé:
-``ssh-keygen``
+```
+ssh-keygen
+```
 
 4. Envoyez cette nouvel clé sur vôtre Raspberry:
-``ssh-copy-id idk@192.168.X.X``
+```
+ssh-copy-id idk@192.168.X.X
+```
 
 5. Éditer le fichier de config ssh de vôtre hots:
-``nano ~/.ssh/config``
+```
+nano ~/.ssh/config
+```
 
 * Rajouter ceci dans vôtre fichier:
 ```
@@ -133,25 +139,37 @@ Host Raspberry
     IdentitiesOnly yes
 ```
 6. Une fois cette connecter vous sur la Raspberry avec la commande suivante :
-``ssh Raspberry``
+```
+ssh Raspberry
+```
 
 7. Rajouter à la fin du fichier ``sshd_config`` les lignes suivantes:
-``sudo nano /etc/ssh/sshd_config``
+```
+sudo nano /etc/ssh/sshd_config
+```
 ```
 ChallengeResponseAuthentication no
 PasswordAuthentication no
 UsePAM no
 ```
 8. Recharger le service SSH:
-``sudo service ssh reload``
+```
+sudo service ssh reload
+```
 ***
 #### 2.5 Fail2ban
 1. Télécharger fail2ban:
-``sudo apt install fail2ban``
+```
+sudo apt install fail2ban
+```
 2. Copier le fichier ``jail.conf`` en ``jail.local``:
-``sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local``
+```
+sudo cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+```
 3. Éditer le fichier ``jail.local`` puis rajouter les lignes suivantes:
-``sudo nano /etc/fail2ban/jail.local``
+```
+sudo nano /etc/fail2ban/jail.local
+```
 ```
 [ssh]
 enabled  = true
@@ -161,43 +179,67 @@ logpath  = /var/log/auth.log
 maxretry = 3
 ```
 4. Redémarrer le service fail2ban: 
-``sudo systemctl restart fail2ban.service``
+```
+sudo systemctl restart fail2ban.service
+```
 
 ***
 #### 2.6 Partition LVM
 1. Télécharger ``lvm2``:
-``apt install lvm2``
+```
+apt install lvm2
+```
 
 2. Brancher vos deux disques dur.
 3. Création d'un volume physique:
-``sudo pvcreate /dev/sda1 /dev/sdb1``
+```
+sudo pvcreate /dev/sda1 /dev/sdb1
+```
 
 4. Création d'un volume groupe qui s'appellera ``vg-camembert``:
-`` sudo vgcreate vg-camembert /dev/sda1 /dev/sdb1``
+```
+sudo vgcreate vg-camembert /dev/sda1 /dev/sdb1
+```
 
 5. Création d'un volume logique en raid1 faisant 50% de vôtre espace disponible qui servira d'espace pour NextCloud:
-   ``sudo lvcreate --mirrors 1 --type raid1 -l 50%FREE --nosync -n lvm_raid1 vg-camembert``
+```
+sudo lvcreate --mirrors 1 --type raid1 -l 50%FREE --nosync -n lvm_raid1 vg-camembert
+```
    
  6. Création d'un deuxième volume logique en raid1 faisant 100% de l'espace disponible restant qui servira pour Borg:
-   ``sudo lvcreate --mirrors 1 --type raid1 -l 100%FREE --nosync -n lvm_raid2 vg-camembert``
+ ```
+ sudo lvcreate --mirrors 1 --type raid1 -l 100%FREE --nosync -n lvm_raid2 vg-camembert
+ ```
    
  7. Formater le premier volume logique en ext4:
-   ``sudo mkfs.ext4 /dev/vg-camembert/lvm_raid1``
+ ```
+ sudo mkfs.ext4 /dev/vg-camembert/lvm_raid1
+ ```
    
   8. Formater le deuxieme volume logique en ext4:
-   ``sudo mkfs.ext4 /dev/vg-camembert/lvm_raid2``
+ ```
+ sudo mkfs.ext4 /dev/vg-camembert/lvm_raid2
+ ```
    
   9. Création d'un dossier dans ``/media`` pour monter le premier volume:
-  ``sudo mkdir /media/DATA_BACKUP``
+ ```
+ sudo mkdir /media/DATA_BACKUP
+ ```
   
   10. Création d'un second dossier dans ``/media`` pour monter le deuxième volume:
-  ``sudo mkdir /media/DATA_NEXTCLOUD``
+ ```
+ sudo mkdir /media/DATA_NEXTCLOUD
+ ```
   
  11. Monter le premier volume sur le premier dossier:
-``sudo mount /dev/vg-camembert/lvm_raid1 /media/DATA_BACKUP/``
+```
+sudo mount /dev/vg-camembert/lvm_raid1 /media/DATA_BACKUP/
+```
 
 12. Monter le deuxième volume sur le deuxième dossier:
-``sudo mount /dev/vg-camembert/lvm_raid2 /media/DATA_NEXTCLOUD/``
+```
+sudo mount /dev/vg-camembert/lvm_raid2 /media/DATA_NEXTCLOUD/
+```
 ***
 
 
