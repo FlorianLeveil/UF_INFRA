@@ -2,7 +2,7 @@
 ## SOMMAIRE
 
 1. INTRODUCTION
--- Matériels utilisées
+* Matériels utilisées
 2. OS INSTALL
 -- Raspbian
 -- Configuration utilisateur 
