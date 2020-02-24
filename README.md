@@ -4,12 +4,12 @@
 1. INTRODUCTION
 * Matériels utilisées
 2. OS INSTALL
--- Raspbian
--- Configuration utilisateur 
--- Faite un redirection de port sur vôtre box
--- SSH Config
--- Fail2ban
--- Partition LVM
+* Raspbian
+* Configuration utilisateur 
+* Faite un redirection de port sur vôtre box
+* SSH Config
+* Fail2ban
+* Partition LVM
 3. BORG
 4. LDAP
 5. NEXTCLOUD
