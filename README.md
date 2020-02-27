@@ -40,8 +40,8 @@ Software / Hardware:
 * Cronie 1.5.5
 * Freeipa 4.6.5
 ***
-### OS INSTALL
-#### 2.1 Raspbian
+## OS INSTALL
+### 2.1 Raspbian
 1. Télécharger l'iso Raspbian Buster Lite:
 https://www.raspberrypi.org/downloads/raspbian/
 
@@ -62,7 +62,7 @@ https://www.balena.io/etcher/
 ```
 2.  Une fois l'installation terminer aller sur vôtre carte SD, dans la section BOOT créer un fichier `ssh` sans extension afin d'activer le ssh.
 ***
-##### 2.2 Configuration Utilisateur
+### 2.2 Configuration Utilisateur
 1. Allumer votre Raspberry puis repérer son IP pour vous y connecter en SSH.
  ```
 ssh pi@192.168.X.X
@@ -120,7 +120,7 @@ apt install openssh-server
 
 11. Vous pouvez vous déconnecter.
 ***
-#### 2.3 Configurer la redirection de port sur vôtre box:
+### 2.3 Configurer la redirection de port sur vôtre box:
 1. Pour cela aller sur le site officielle de vôtre fournisseur accès internet et regarder la doc concernant la redirection de port.
 
 2. Il nous faut trois redirection de port.
@@ -128,7 +128,7 @@ apt install openssh-server
 * Port 443 -> Sur le port 443 de vôtre Rasberry. (Pour le HTTPS)
 * Port 22 -> Sur le port 22 de vôtre Rasberry. (Pour le SSH)
 ***
-#### 2.4 SSH config
+### 2.4 SSH config
 1. On va activer la connexion SSH par clés.
 3. Sur vôtre host générer une nouvel clé:
 ```
@@ -173,7 +173,7 @@ UsePAM no
 sudo service ssh reload
 ```
 ***
-#### 2.5 Fail2ban
+### 2.5 Fail2ban
 1. Télécharger fail2ban:
 ```
 sudo apt install fail2ban
@@ -200,7 +200,7 @@ sudo systemctl restart fail2ban.service
 ```
 
 ***
-#### 2.6 Partition LVM
+### 2.6 Partition LVM
 1. Télécharger ``lvm2``:
 ```
 apt install lvm2
@@ -258,7 +258,7 @@ sudo mount /dev/vg-camembert/lvm_raid2 /media/DATA_NEXTCLOUD/
 ```
 ***
 ### BORG
-#### INSTALL BORG:
+### INSTALL BORG:
 1. Sur la Raspberry créer un dossier `BACKUP` dans `/media/DATA_BACKUP/`
 ```
 sudo mkdir /media/DATA_BACKUP/BACKUP
@@ -279,7 +279,7 @@ sudo pacman -S borgbackup
 borg init --encryption=repokey ssh://idk@IP_PUBLIC_DE_VOTRE_BOX:22/media/DATA_BACKUP/BACKUP/
 ```
 ***
-#### SCRIPT BACKUP:
+### SCRIPT BACKUP:
 1. Faire une sauvegarde:
 ```
 borg create ssh://IP_PUBLIC_DE_VOTRE_BOX:22/media/DATA_BACKUP/BACKUP/::idk_{now:%d.%m.%Y} ~/VOTRE_DOSSIER_A_SAUVEGARDER
@@ -298,7 +298,7 @@ borg create ssh://IP_PUBLIC_DE_VOTRE_BOX:22/media/DATA_BACKUP/BACKUP/::idk_{now:
 bash ~/VOTRE_DOSSIER_A_SAUVEGARDER/script_backup.sh
 ```
 ***
-#### CRONTAB:
+### CRONTAB:
 1. Installer la CronTab:
 ```
 sudo pacman -S cronie
@@ -317,7 +317,7 @@ crontab -e
 0 4 * * * /home/idk/VOTRE_DOSSIER_A_SAUVEGARDER/script_backup.sh> /dev/null 2>&1
 ```
 ***
-#### RESTORE BACKUP:
+### RESTORE BACKUP:
 1. Création d'un script récupérant la list des backups:
 ```
 vim ~/VOTRE_DOSSIER_A_SAUVEGARDER/script_list_backup.sh
@@ -340,14 +340,14 @@ cd /
 borg extract ssh://idk@109.21.215.30:3333/media/DATA_BACKUP/BACKUP/::LE_NOM_DE_VOTRE_BACKUP
 ```
 ***
-### Freeipa
+## Freeipa
 Liens pouvant vous être utilse:
 
 https://www.golinuxcloud.com/configure-setup-freeipa-server-client-linux/
 https://www.worteks.com/fr/2018/03/29/freeipa-part1/
 https://www.howtoforge.com/tutorial/how-to-install-freeipa-server-on-centos-7/
 ***
-#### Installation Freeipa:
+### Installation Freeipa:
 1. Connectez vous en SSH sur vôtre VPS
 2. Set le hostname:
 ```
@@ -387,7 +387,7 @@ ipa-server-install
 firewall-cmd --reload
 ```
 ***
-#### Création de Users et Group pour NextCloud:
+### Création de Users et Group pour NextCloud:
 * Création d'un user:
 	 * Aller sur l'onglet Identité >Utilisateurs > Utilisateurs Actif > Ajouter.
 	 * Vous pouvez mettre seulement un nom et un prénom.
