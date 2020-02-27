@@ -19,11 +19,14 @@
  * Installation freeipa
  * Création de Users et Group pour NextCloud
 5. NEXTCLOUD
+* Install Docker
+* Install NextCloud
+* Install Plugin LDAP sur NextCloud
 ***
 
 ### INTRODUCTION
 
-***Guide d’installation pas à pas d'un gestionnaire de media (NextCloud) avec une authentification LDAP,  héberger chez sois sur une Raspberry pi 3B+ avec deux disques dur monté en Raid1. Ainsi qu'une solution de sauvegarde avec herbergement des données sur la Raspberry (Borg)***
+***Guide d’installation pas à pas d'un gestionnaire de media (NextCloud) héberger chez sois sur une Raspberry pi 3B+ avec deux disques dur monté en Raid1.Mise en place d'une authentification via FreeIPA héberger sur un VPS OVH. Ainsi qu'une solution de sauvegarde avec herbergement des données sur la Raspberry (Borg)***
 
 ***
 Matériels utilisées:
@@ -402,6 +405,36 @@ firewall-cmd --reload
 	* Cliquer sur Groupe Utilisateur > Ajouter.
 	* Cocher le groupe `Next_Cloud`, cliquer sur la flèche pour le basculer à droite puis cliquer sur` Ajouter`.
 *** 
+## NEXTCLOUD
+### Install Docker:
+1. Installer des paquets indispensable pour Docker:
+```
+sudo apt-get install apt-transport-https ca-certificates software-properties-common -y
+```
+2. Récupération de Docker:
+```
+curl -fsSL get.docker.com -o get-docker.sh && sh get-docker.sh
+```
+3. Ajout de l'utilisateur `idk` dans le groupe `docker`:
+```
+sudo usermod -aG docker idk
+```
+
+### Install NextCloud:
+1. Installer du container NextCloud:
+```
+sudo docker run --restart always --name NC_IDK -v/media/DATA_NEXTCLOUD/NEXTCLOUD:/var/www/html/data -d -p 443:443 nextcloud
+```
+2. Taper l'ip public de vôtre box dans l'url et vous devriez arriver sur la page d'acceuil NextCloud.
+3. Ajouter un utilisateur Admin.
+### Install du plugin LDAP
+* Pour télécharger le Plugin suivez ce tuto:
+	* http://www.techspacekh.com/integrating-nextcloud-user-authentication-with-ldapactive-directory-ad/
+* Pour parametrer le Plugin suivez ce tuto:
+	* https://www.freeipa.org/page/Owncloud_Authentication_against_FreeIPA
+	
+**ATTENTION**
+Par défaut vôtre login est: *"prénom nom"*
 
 
 
