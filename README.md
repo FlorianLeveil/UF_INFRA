@@ -257,7 +257,7 @@ sudo mount /dev/vg-camembert/lvm_raid1 /media/DATA_BACKUP/
 sudo mount /dev/vg-camembert/lvm_raid2 /media/DATA_NEXTCLOUD/
 ```
 ***
-### BORG
+## BORG
 ### INSTALL BORG:
 1. Sur la Raspberry créer un dossier `BACKUP` dans `/media/DATA_BACKUP/`
 ```
