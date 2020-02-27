@@ -2,16 +2,22 @@
 ## SOMMAIRE
 
 1. INTRODUCTION
-* Matériels utilisées
+ * Matériels utilisées
 2. OS INSTALL
-* Raspbian
-* Configuration utilisateur 
-* Faite un redirection de port sur vôtre box
-* SSH Config
-* Fail2ban
-* Partition LVM
+ * Raspbian
+ * Configuration utilisateur 
+ * Faite un redirection de port sur vôtre box
+ * SSH Config
+ * Fail2ban
+ * Partition LVM
 3. BORG
-4. LDAP
+ * Installation Borg
+ * Script Backup
+ * Crontab
+ * Restore Backup
+4. FREEIPA
+ * Installation freeipa
+ * Création de Users et Group pour NextCloud
 5. NEXTCLOUD
 ***
 
@@ -21,8 +27,18 @@
 
 ***
 Matériels utilisées:
-* Rasberry 3B+.
+Software / Hardware:
+* Rasberry 3B+. (With Raspbian latest)
 * 2 disques dur 2TO Chacun.
+* VPS héberger chez OVH(With Centos 7)
+* Un nom de domaine avec DNS sur OVH
+* Un client (With ArchLinux)
+* Borg 1.1.9
+* Docker version 19.03.6
+* Image NextCloud Latest pour Docker
+* Fail2Ban v0.10.2
+* Cronie 1.5.5
+* Freeipa 4.6.5
 ***
 ### OS INSTALL
 #### 2.1 Raspbian
@@ -241,7 +257,151 @@ sudo mount /dev/vg-camembert/lvm_raid1 /media/DATA_BACKUP/
 sudo mount /dev/vg-camembert/lvm_raid2 /media/DATA_NEXTCLOUD/
 ```
 ***
+### BORG
+#### INSTALL BORG:
+1. Sur la Raspberry créer un dossier `BACKUP` dans `/media/DATA_BACKUP/`
+```
+sudo mkdir /media/DATA_BACKUP/BACKUP
+```
+```
+sudo chmod 777 /media/DATA_BACKUP/BACKUP
+```
+2. Sur la Raspberry Installer Borg:
+```
+sudo apt install borgbackup
+```
+3. Sur votre host installer Borg:
+```
+sudo pacman -S borgbackup
+```
+4. Depuis vôtre host Initialiser Borg sur vôtre Raspberry:
+```
+borg init --encryption=repokey ssh://idk@IP_PUBLIC_DE_VOTRE_BOX:22/media/DATA_BACKUP/BACKUP/
+```
+***
+#### SCRIPT BACKUP:
+1. Faire une sauvegarde:
+```
+borg create ssh://IP_PUBLIC_DE_VOTRE_BOX:22/media/DATA_BACKUP/BACKUP/::idk_{now:%d.%m.%Y} ~/VOTRE_DOSSIER_A_SAUVEGARDER
+```
+2.  Créer un fichier dans le dossier que vous voulez sauvegarder:
+```
+vim ~/VOTRE_DOSSIER_A_SAUVEGARDER/script_backup.sh
+```
+3. Éditer vôtre fichier et ajouter ceci:
+```
+export BORG_PASSPHRASE='VOTRE_MDP_BORG'
+borg create ssh://IP_PUBLIC_DE_VOTRE_BOX:22/media/DATA_BACKUP/BACKUP/::idk_{now:%d.%m.%Y} ~/VOTRE_DOSSIER_A_SAUVEGARDER
+```
+4. Pour lancer vôtre script:
+```
+bash ~/VOTRE_DOSSIER_A_SAUVEGARDER/script_backup.sh
+```
+***
+#### CRONTAB:
+1. Installer la CronTab:
+```
+sudo pacman -S cronie
+```
+2. Activer la crontab au démarrage et la lancer:
+```
+sudo systemctl start cronie
+sudo systemctl enable cronie
+```
+3. Ajouter vôtre script à la crontab:
+```
+crontab -e
+```
+4. Et rajouter ceci pour que vôtre script de backup s'éxécute tout les jours à 4H00:
+```
+0 4 * * * /home/idk/VOTRE_DOSSIER_A_SAUVEGARDER/script_backup.sh> /dev/null 2>&1
+```
+***
+#### RESTORE BACKUP:
+1. Création d'un script récupérant la list des backups:
+```
+vim ~/VOTRE_DOSSIER_A_SAUVEGARDER/script_list_backup.sh
+```
+2. Éditer vôtre fichier et ajouter ceci:
+```
+export BORG_PASSPHRASE='VOTRE_MDP_BORG'
+borg list ssh://idk@109.21.215.30:3333/media/DATA_BACKUP/BACKUP/
+```
+3. Pour lancer vôtre script:
+```
+bash ~/VOTRE_DOSSIER_A_SAUVEGARDER/script_list_backup.sh
+```
+4. Une fois les backups lister placez-vous à la racine:
+```
+cd /
+```
+5. Choisissez la backup qui vous intéresse et exécuter la commande suivante:
+```
+borg extract ssh://idk@109.21.215.30:3333/media/DATA_BACKUP/BACKUP/::LE_NOM_DE_VOTRE_BACKUP
+```
+***
+### Freeipa
+Liens pouvant vous être utilse:
 
+https://www.golinuxcloud.com/configure-setup-freeipa-server-client-linux/
+https://www.worteks.com/fr/2018/03/29/freeipa-part1/
+https://www.howtoforge.com/tutorial/how-to-install-freeipa-server-on-centos-7/
+***
+#### Installation Freeipa:
+1. Connectez vous en SSH sur vôtre VPS
+2. Set le hostname:
+```
+hostnamectl set-hostname ldap.VOTRE.DOMAIN
+```
+3. Éditer le hosts:
+```
+vim /etc/hosts
+```
+4. Rajouter ceci dans les `/etc/hosts`:
+```
+VOTRE_IP       ldap.VOTRE.DOMAIN
+```
+5. Télécharger Freeipa:
+```
+sudo yum install ipa-server bind-dyndb-ldap ipa-server-dns -y
+```
+6. Ajouter des ports au firewall:
+```
+firewall-cmd --permanent --add-port={80/tcp,443/tcp,389/tcp,636/tcp,88/tcp,464/tcp,53/tcp,88/udp,464/udp,53/udp,123/udp}
+```
+7. Recharger vôtre firewall:
+```
+firewall-cmd --reload
+```
+8. Instalation de Freeipa avec le DNS de OVH:
+* Si vous avec besoin de setup vôtre propre DNS regarder les liens qui vous sont proposer au début de l'article.
+```
+ipa-server-install
+``` 
+* Cela peut prendre pas mal de temps
+
+9. Une fois fini, copier le fichier ``/tmp/ipa.system.records.XXXXX.db`` en supprimant les ports(dans le fichier) et ajouter le dans les paramètre de vôtre DNS.
+ 
+11. Recharger vôtre firewall:
+```
+firewall-cmd --reload
+```
+***
+#### Création de Users et Group pour NextCloud:
+* Création d'un user:
+	 * Aller sur l'onglet Identité >Utilisateurs > Utilisateurs Actif > Ajouter.
+	 * Vous pouvez mettre seulement un nom et un prénom.
+	 
+* Création d'un Group Next_Cloud:
+	*  Aller sur l'onglet Identité > Groupes > Groupes Utilisateurs > Ajouter.
+	* Type de groupe, sélectionner `POSIX`.
+
+* Mettre un User dans le groupe Next_Cloud:
+	* Aller sur l'onglet Identité > Groupes > Groupes Utilisateurs.
+	* Cliquer sur le User concerner.
+	* Cliquer sur Groupe Utilisateur > Ajouter.
+	* Cocher le groupe `Next_Cloud`, cliquer sur la flèche pour le basculer à droite puis cliquer sur` Ajouter`.
+*** 
 
 
 
